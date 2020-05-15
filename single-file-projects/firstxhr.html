@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script> 
+    
+        console.log('test');
+        let xhr = new XMLHttpRequest();
+
+        let method = 'GET';
+
+        let endpoint = 'http://api.github.com/users';
+
+
+
+    
+        xhr.open(method, endpoint) //initialize the api request
+
+        xhr.onload = () => { //handle the api response
+            
+
+            let xhrRawResponse = xhr.responseText;
+
+            let parsedResponse = JSON.parse(xhrRawResponse);
+
+            console.log(parsedResponse);
+
+            for (let i = 0; i < parsedResponse.length; i++) {
+                
+                let user = parsedResponse[i]; //expected output, an object with users properties
+
+                //dealing with showing this info on the frontend
+                console.log(user.login);
+
+                displayUser(user)
+                
+            }
+           
+        }
+
+
+        xhr.send() //if we need to this will pass information with the request, in the form of a JS object (JSON)
+
+        console.log(xhr);
+
+        function displayUser(userObj) {
+
+                let heading = document.createElement('h3');
+
+                heading.innerText = userObj.login;
+
+                document.body.appendChild(heading);
+                                
+                let link = document.createElement('a');
+                
+               link.innerText = userObj.login + ' GitHub Page';
+
+               link.href = userObj.html_url;     
+
+                document.body.appendChild(link);
+
+                let button = document.createElement('button');
+
+                button.innerText = 'Get More Info On ' + userObj.login;
+
+                button.onclick = () => getMoreInfoRequest(userObj.login);
+
+                document.body.appendChild(button)
+
+
+
+
+
+                //this should go on a div and not a body 
+        }
+
+
+        function getMoreInfoRequest(username) {
+
+            console.log(username);
+
+            //create an instance of the XHR (XMLhttprequest) Object
+            let xhr = new XMLHttpRequest();
+
+            //open the channel to the api or initialize the request call
+
+            xhr.open('GET', `http://api.github.com/users/${username}`);
+
+            xhr.onload = () => {
+
+                let rawData = xhr.responseText;
+
+                let response = JSON.parse(rawData);
+
+                console.log(response);
+
+
+
+            }
+
+
+            xhr.send();
+
+            console.log(username);
+
+
+        }
+    </script>
+</body>
+</html>
+
+<!-- //get, post, patch, put/patch and delete are the most common API
+//http servers communicate with servers and clients interact with servers
+//there is a request object, inside there is an object called a param.
+
+//XMLHttprequests have all the methods within it to work with the APIs in an http request. 
+
+Without a new keyword it is not an object, must use new to make it an object.
+
+ -->
