@@ -1,0 +1,1 @@
+This program uses the Get, Post, Patch and Delete API's with the GO-REST database. These APIs create new users, display all of the users, allow user's information to be edited, and delete users. HTML elements are created through javascript and made through different HTML functions. 
