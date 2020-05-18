@@ -1,6 +1,6 @@
 //These functions create different HTML elements and append them to the DOM
 
-function createSelectElement(selectObject) {
+function createSelectElement(selectObject) { //creates a select element.
 
     let select = document.createElement('select');
 
@@ -160,9 +160,50 @@ function createInput(inputObj) { // id, class, sCheck, pHolder
 
 }
 
-const goRestKey = 'cCurhOCUM_g5OPpgnDi-gzpu4amlLLfKlQ-Z';
+const goRestKey = 'cCurhOCUM_g5OPpgnDi-gzpu4amlLLfKlQ-Z'; //API key for goRest's API.
 
-function requestUsers(pageNum) {
+window.onload = () => {//Onload function that creates divs, buttons to view all goRest's users, displays all of the user's with 
+// requestUsers (currentPage); and allows new users to be created with createPostForm().
+
+    let uiDiv = createDivElement({id: 'uiDiv'});
+
+    let postsDiv = createDivElement({id: 'postsDiv'});
+
+    let formHeader = createHeading({size: 1, text: 'Please Input Information To Create New User'});
+
+    let prevPage = document.createElement('button');
+    
+    prevPage.id = 'prevPage';
+
+    prevPage.onclick = prevPageRequest;
+
+    prevPage.innerText = 'Previous Page';
+
+    let nextPage = document.createElement('button');
+
+    nextPage.id = 'nextPage';
+
+    nextPage.onclick = nextPageRequest;
+
+    nextPage.innerText = 'Next Page';
+
+    uiDiv.appendChild(prevPage);
+
+    uiDiv.appendChild(nextPage);
+
+    uiDiv.appendChild(formHeader);
+
+    document.body.appendChild(uiDiv);
+
+    document.body.appendChild(postsDiv);
+    
+    createPostForm()
+
+    requestUsers(currentPage);
+
+}
+
+function requestUsers(pageNum) {  //GET request to access all users from goRest, takes pageNum as an argument.
 
     let xhr = new XMLHttpRequest();
 
@@ -185,9 +226,7 @@ function requestUsers(pageNum) {
     xhr.send();
 }
 
-function newUserRequest(body){
-
- //make XHR Object, post body where it needs to go and set headers. body goes in send method. 
+function newUserRequest(body){ //Post request that takes body as an argument and sends to goRest's database.
 
  let xhr = new XMLHttpRequest(),
 
@@ -210,7 +249,7 @@ function newUserRequest(body){
     xhr.send(body);
 }
 
-function deleteUserRequest(userId) {
+function deleteUserRequest(userId) { //Delete request takes userID as an argument and confirms and deletes a user from the DOM and goRest's database.
 
     let xhr = new XMLHttpRequest(),
 
@@ -228,7 +267,7 @@ function deleteUserRequest(userId) {
     xhr.send();
 }
 
-function updateUserRequest(userId, body){
+function updateUserRequest(userId, body){  //Patch request to goRest's database to edit a user's information using userId and body as arguments.
 
 let xhr = new XMLHttpRequest(),
 
@@ -250,49 +289,12 @@ let xhr = new XMLHttpRequest(),
 
 }
 
-let currentPage = 1,
+let currentPage = 1, //The first page in the UI
 
-     maxPages;
+     maxPages; //An empty variable to allow all user's to be displayed to the dom.
 
-window.onload = () => {
 
-    let uiDiv = createDivElement({id: 'uiDiv'});
-
-    let postsDiv = createDivElement({id: 'postsDiv'});
-
-    let prevPage = document.createElement('button');
-    
-    prevPage.id = 'prevPage';
-
-    prevPage.onclick = prevPageRequest;
-
-    prevPage.innerText = 'Previous Page';
-
-    let nextPage = document.createElement('button');
-
-    nextPage.id = 'nextPage';
-
-    nextPage.onclick = nextPageRequest;
-
-    nextPage.innerText = 'Next Page';
-   
-    uiDiv.appendChild(prevPage);
-
-    uiDiv.appendChild(nextPage);
-
-    document.body.appendChild(uiDiv);
-
-    document.body.appendChild(postsDiv);
-    
-    createPostForm()
-
-    requestUsers(currentPage);
-
-}
-
-function createPostForm(){
-
-//creates the form elements and the input elements
+function createPostForm(){ //Creates the form that contains inputs for a new user's information, appends to DOM and creates a submit button that is linked to submitnewUser function.
 
 let form = document.createElement('div');
 
@@ -356,13 +358,12 @@ form.appendChild(button)
 
 }
 
-function submitnewUser(){
+function submitnewUser(){//Iterates through the user inputs and makes sure all inputs are filled with a valid email address and alerts the user if not all of the inputs are filled or if other information is invalid. Then JSON stringifies the information and runs a newUserRequest call
     
        let divChildren = this.parentElement.children,
         
             userBody = {};
         
-        //itterate through all the elements in 'editDiv', extract input values into a JS object.
         for (const htmlElm of divChildren) {
     
             if (htmlElm.localName == 'input' && htmlElm.value.trim() != '') {
@@ -395,23 +396,19 @@ function submitnewUser(){
             //must check there is only one @ symbol, and at least one dot after the @ symbol
         if (e[0] == '.' || e[e.length-1] == '.' || numOfAts != 1 || dotRegEx.test(e)){
 
-                //alert them the email is in incorrect format
                 alert('Your email input is not a valid email')
 
-                //return nothing to stop the request            
                 return
 
         }
     
-        //stringify the object created from the input elements so it can be used in a XHR
         userBody = JSON.stringify(userBody);
     
-        newUserRequest(userBody); //call the POST request
+        newUserRequest(userBody); 
         
-        //switch back to the display elements showing
 }
 
-function prevPageRequest() {
+function prevPageRequest() {//Makes a post request for the previous page.
 
     currentPage = currentPage == 1 ? maxPages : currentPage-1;
 
@@ -419,14 +416,14 @@ function prevPageRequest() {
 
 }
 
-function nextPageRequest(){
+function nextPageRequest(){//Makes a post request for the next page.
 
     currentPage = currentPage == maxPages ? 1 : currentPage+1;
 
     requestUsers(currentPage);
 }
 
-function displayUserPage(usersData) {
+function displayUserPage(usersData) {//Creates HTML elements for editUser/deleteUser/cancelUser and Users. Appends them to the dom.
 
     postsDiv.innerHTML = '';
 
@@ -577,7 +574,7 @@ function displayUserPage(usersData) {
     }
 }
 
-function editUser() {
+function editUser() {//When ran this function reveals the input form to edit a user's information.
 
     let editDiv = this.parentElement.parentElement.lastChild;
 
@@ -589,7 +586,7 @@ function editUser() {
 
 }
 
-function deleteUser(){
+function deleteUser(){//Delete's a user from the DOM and makes a DELETE XMLHttpRequest to goRest's database.
  
     let userId = this.parentElement.parentElement.id;
 
@@ -611,7 +608,7 @@ function deleteUser(){
 
 }
 
-function cancelEdit(){
+function cancelEdit(){//Allows a user to cancel any sort of information they put into the edit form.
 
     alert('Nothing was edited');
 
@@ -624,8 +621,7 @@ function cancelEdit(){
     editDiv.style.display = 'none';
 }
 
-function confirmEdit(){
-
+function confirmEdit(){//Iterates through the inputs of the edit inputs, stringifies them and runs updateUserRequest to make the patch request.
 
     let divChildren = this.parentElement.children,
 
@@ -633,15 +629,12 @@ function confirmEdit(){
 
         updateReqBody = {};
 
-
-    //itterate through all the elements in 'editDiv', extract input values into a JS object.
-    for (const htmlElm of divChildren) {
+        for (const htmlElm of divChildren) {
 
         if (htmlElm.localName == 'input' && htmlElm.value.trim() != '') {
 
             updateReqBody[htmlElm.name] = htmlElm.value.trim();
         }
-        
     }
 
     if (JSON.stringify(updateReqBody) === '{}') {
@@ -657,14 +650,9 @@ function confirmEdit(){
         console.log('The request is a go')
     }
 
-    //stringify the object created from the input elements so it can be used in a XHR
-
     updateReqBody = JSON.stringify(updateReqBody);
 
-    updateUserRequest(userId, updateReqBody); //call the PATCH request
-
-
-    //switch back to the display elements showing
+    updateUserRequest(userId, updateReqBody); 
 
     let displayDiv = this.parentElement.parentElement.firstChild;
 
